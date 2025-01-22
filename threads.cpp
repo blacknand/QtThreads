@@ -16,6 +16,14 @@ void TestThread::parseData()
 }
 
 
+void TimeThread::callCurrentTime()
+{
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &TimeThread::getCurrentTime);
+    timer->start(1000);
+}
+
+
 void TimeThread::getCurrentTime()
 {
     QDateTime current = QDateTime::currentDateTime();

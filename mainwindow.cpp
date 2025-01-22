@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     timeWorker->moveToThread(&timeThread);
     connect(&timeThread, &QThread::finished, timeWorker, &QObject::deleteLater);
     connect(timeWorker, &TimeThread::timeUpdated, this, &MainWindow::handleTimeThread);
-    connect(this, &MainWindow::startTimerThread, timeWorker, &TimeThread::getCurrentTime);
+    connect(this, &MainWindow::startTimerThread, timeWorker, &TimeThread::callCurrentTime);
 
     testThread.start();
     timeThread.start();

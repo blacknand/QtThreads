@@ -1,5 +1,6 @@
 #include <QObject>
 #include <QString>
+#include <QTimer>
 
 
 class TestThread : public QObject
@@ -22,8 +23,11 @@ class TimeThread : public QObject
 public:
     TimeThread() = default;
     ~TimeThread() = default;
-public slots:
+private:
+    QTimer *timer;
     void getCurrentTime();
+public slots:
+    void callCurrentTime();
 signals:
     void timeUpdated(const QString &time);
 };
