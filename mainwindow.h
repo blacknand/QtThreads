@@ -1,23 +1,26 @@
 #include <QMainWindow>
 #include <QTextEdit>
 #include <QThread>
+#include <QTime>
+#include <QTimer>
 
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    QThread workerThread;
-    QThread _workerThread;
+    QThread testThread;
+    QThread timeThread;
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() = default;
 private:
-    QTextEdit *defaultText;
-    QTextEdit *timerText;
-    QTextEdit *reportText;
+    QTextEdit *textEdit;
+    QTextEdit *mainText;
+    QTimer *timer;
 public slots:
-    void handleResults(const int &result);
-    void updateStatus(const QString &status);   
+    void handleTestThread(const QString &);
+    void handleTimeThread(const QString &);
 signals:
-    void operate(const QString &);
+    void startTestThread();
+    void startTimerThread();
 };

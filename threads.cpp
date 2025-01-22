@@ -4,14 +4,27 @@
 #include <QThread>
 #include <QObject>
 #include <QDebug>
+#include <QDateTime>
+#include <QString>
+#include <QTime>
+#include <QTimer>
 
 
-void Worker::doWork(const QString &parameter)
+void TestThread::parseData()
 {
-    int result = 0;
-    for (int i = 0; i < 100000; i++) {
-            result++;
-            emit statusReport("processing " + QString::number(i));
-        }
-    emit resultReady(result);
+    QTimer::singleShot(10000, this, &TestThread::emitTestThread);
+}
+
+
+void TimeThread::getCurrentTime()
+{
+    QDateTime current = QDateTime::currentDateTime();
+    QString time = current.toString("hh:mm:ss");
+    emit timeUpdated(QString(time));
+}
+
+
+void TestThread::emitTestThread()
+{
+    emit resultReady("workerThread finished executing!");
 }
