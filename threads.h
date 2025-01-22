@@ -1,16 +1,33 @@
 #include <QObject>
 #include <QString>
+#include <QTimer>
 
 
-class Worker : public QObject
+class TestThread : public QObject
 {
     Q_OBJECT
 public:
-    Worker() = default;
-    ~Worker() = default;
+    TestThread() = default;
+    ~TestThread() = default;
 public slots:
-    void doWork(const QString &parameter);
+    void parseData();
+    void emitTestThread();
 signals:
-    void resultReady(const int &result);
-    void statusReport(const QString &status);
+    void resultReady(const QString &msg);
+};
+
+
+class TimeThread : public QObject 
+{
+    Q_OBJECT
+public:
+    TimeThread() = default;
+    ~TimeThread() = default;
+private:
+    QTimer *timer;
+    void getCurrentTime();
+public slots:
+    void callCurrentTime();
+signals:
+    void timeUpdated(const QString &time);
 };

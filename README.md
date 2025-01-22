@@ -1,1 +1,1 @@
-# QtThreads
+`button` branch implements the QTimer

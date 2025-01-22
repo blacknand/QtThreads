@@ -4,41 +4,59 @@
 #include <iostream>
 #include <QTimer>
 #include <QTextEdit>
+#include <QDateTime>
+#include <QHBoxLayout>
+#include <QWidget>
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    defaultText = new QTextEdit(this);
-    defaultText->setText("Hello, world!");
+    QWidget *centralWidget = new QWidget(this);
+    QHBoxLayout *layout = new QHBoxLayout(centralWidget);
 
-    reportText = new QTextEdit(this);
-    defaultText->setText("Status report");
-    reportText->setGeometry(10, 50, 380, 200);
+    textEdit = new QTextEdit("INITIAL TEXT");
+    textEdit->setAlignment(Qt::AlignCenter);
 
-    Worker *worker = new Worker();
-    worker->moveToThread(&workerThread);
+    mainText = new QTextEdit("MAIN TEXT");
+    mainText->setAlignment(Qt::AlignCenter);
 
-    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(this, &MainWindow::operate, worker, &Worker::doWork);
-    connect(worker, &Worker::resultReady, this, &MainWindow::handleResults);
-    connect(worker, &Worker::statusReport, this, &MainWindow::updateStatus);
+    layout->addWidget(textEdit);
+    layout->addWidget(mainText);
 
-    workerThread.start();
+    centralWidget->setLayout(layout);
+    setCentralWidget(centralWidget);
 
-    emit operate("start");
-    
+
+    TestThread *testWorker = new TestThread();
+    testWorker->moveToThread(&testThread);
+    connect(&testThread, &QThread::finished, testWorker, &QObject::deleteLater);
+    connect(testWorker, &TestThread::resultReady, this, &MainWindow::handleTestThread);
+    connect(this, &MainWindow::startTestThread, testWorker, &TestThread::parseData);
+
+    TimeThread *timeWorker = new TimeThread();
+    timeWorker->moveToThread(&timeThread);
+    connect(&timeThread, &QThread::finished, timeWorker, &QObject::deleteLater);
+    connect(timeWorker, &TimeThread::timeUpdated, this, &MainWindow::handleTimeThread);
+    connect(this, &MainWindow::startTimerThread, timeWorker, &TimeThread::callCurrentTime);
+
+    testThread.start();
+    timeThread.start();
+
+    emit startTestThread();
+    emit startTimerThread();
+
     resize(400, 300);
     setWindowTitle("Threads playground");
 }
 
 
-void MainWindow::handleResults(const int &result)
+void MainWindow::handleTestThread(const QString &) 
 {
-    defaultText->setText("Result is: " + QString::number(result));
+    textEdit->setText("workerThread finished executing!");
 }
 
 
-void MainWindow::updateStatus(const QString &status)
+void MainWindow::handleTimeThread(const QString &time)
 {
-    reportText->setText(status);
+    mainText->setText(time);
 }
