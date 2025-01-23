@@ -27,11 +27,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setCentralWidget(centralWidget);
 
 
+    /**
+     * The thread object testWorker is moved to a thread object testThread
+     * The startTestThread signal is connected to the parseData method which then emits the resultReady signal,
+     * when the resultReady signal is emitted the GUI is updated with the handleTestThread method
+     */
     TestThread *testWorker = new TestThread();
     testWorker->moveToThread(&testThread);
-    connect(&testThread, &QThread::finished, testWorker, &QObject::deleteLater);
-    connect(testWorker, &TestThread::resultReady, this, &MainWindow::handleTestThread);
-    connect(this, &MainWindow::startTestThread, testWorker, &TestThread::parseData);
+    connect(&testThread, &QThread::finished, testWorker, &QObject::deleteLater);                        // Connect the testThread to the testWorker thread to delete it when the thread is finished
+    connect(testWorker, &TestThread::resultReady, this, &MainWindow::handleTestThread);                 // Connect the testWorker thread with the TestThread::resultReady method to connect to the handleTestThread
+    connect(this, &MainWindow::startTestThread, testWorker, &TestThread::parseData);                    // Connect the startTestThread signal to the TestThread::parseData method so when the signal is emitted parseData is called
 
     TimeThread *timeWorker = new TimeThread();
     timeWorker->moveToThread(&timeThread);
